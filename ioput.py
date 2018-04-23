@@ -21,7 +21,7 @@ class Type_Input:
             file_list = []
             for (root,dirs,files) in os.walk(self.res_floder):
                 file_list += files
-            type_list = [i.split('.')[0] for i in set(file_list)]
+            type_list = [i.split('.')[0].split('_')[0] for i in set(file_list)]
             return type_list
         else:
             return
