@@ -85,6 +85,30 @@ class Rectangle:
         a_dict['radius'] = self.radius
         return a_dict
 
+class Sample_Generator:
+    def __init__(self, region_name, category=''):
+        self.count_sati_rects = []
+        self.radius_sati_rects = []
+        self.category = category
+        self.region_name = region_name
+
+    def filter_radius(self, rects, radius):
+        print('开始生成 %s 采样区域' % self.region_name)
+        loop_count = 0
+        while rects:
+            loop_count += 1
+            print('第 %s 计算' % loop_count)
+            rect = rects.pop()
+            if rect.radius > radius:
+                rects.extend(rect.divided_into_four())
+            else:
+                self.radius_sati_rects.append(rect)
+        print(u"%s 生成少于 %s 采样点 %s 个" % (self.region_name, radius, len(self.radius_sati_rects)))
+
+
+    def filter_count(self, rects, res_num):
+        pass
+
 if __name__ == "__main__":
     a_rect = Rectangle().read_from_shp(r'D:\program_lib\GDPOI\guangzhou\广州shapefile')
     square = a_rect.convert_to_outline_square()
