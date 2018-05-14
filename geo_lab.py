@@ -107,6 +107,8 @@ class Sample_Generator:
 
 
     def filter_count(self, rects, res_num):
+        """根据具体爬虫进行结果筛选"""
+        print('跳过')
         pass
 
 if __name__ == "__main__":
