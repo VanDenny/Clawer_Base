@@ -150,6 +150,7 @@ def get_filepath(folder_path):
 if __name__ == "__main__":
     # gdpoi_merger = Gdpoi_merger(r'D:\program_lib\GDPOI\GD_poi_result')
     # gdpoi_merger.process()
+    # 修改
     mongo_input = Mongo_input('GD_POI')
     mongo_input.input_many(r'D:\program_lib\GDPOI\GD_poi_result\merged.csv', 'dataPool')
 
