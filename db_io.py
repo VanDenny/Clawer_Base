@@ -75,7 +75,7 @@ class Mongo_input:
                 self.base_input(file_path, collection_name, 'id', gene_date)
 
 
-class Gdpoi_merger:
+class Excel_merger:
     def __init__(self, folder_path):
         self.folder_path = folder_path
 
@@ -87,6 +87,7 @@ class Gdpoi_merger:
             if '.xlsx' in path or '.xls' in path:
                 df = pd.read_excel(path)
                 df['geneDate'] = gene_date
+                # del df['Unnamed: 0']
                 return df
             elif '.csv' in path:
                 df = pd.read_csv(path, engine='python',)
@@ -112,9 +113,9 @@ class Gdpoi_merger:
         print('合并完成')
         return all_df
 
-    def dropduplicates(self, df, col_name):
-        df = df.sort_values(by='geneDate')
-        df.drop_duplicates(col_name, inplace=True)
+    def dropduplicates(self, df, dup_col, sort_col):
+        df = df.sort_values(by=sort_col)
+        df.drop_duplicates(dup_col, inplace=True)
         print('去重完成')
         return df
 
@@ -132,8 +133,9 @@ class Gdpoi_merger:
 
 
     def process(self):
+        # 根据具体需求组合
         df = self.merge()
-        df = self.dropduplicates(df, 'id')
+        df = self.dropduplicates(df, 'id', 'geneDate')
         df = self.split(df, 'location')
         self.saver(df)
 
