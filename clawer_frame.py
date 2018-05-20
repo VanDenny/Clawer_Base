@@ -5,6 +5,7 @@ from Clawer_Base.key_changer import Key_Changer
 import requests
 from requests.exceptions import ReadTimeout, ConnectionError
 import time
+import re
 
 class Clawer:
     """定义爬虫基类，普遍包含采集、解析、储存三个功能"""
@@ -23,7 +24,9 @@ class Clawer:
                                     params=self.params, timeout=5,
                                     allow_redirects=False, cookies=self.cookies, **self.proxys)
             self.req_url = self.req.url
+            # print(self.req_url)
             status_code = self.req.status_code
+            # print(status_code)
             self.scheduler_by_statuscode(status_code)
 
         except (ReadTimeout, ConnectionError) as e:
@@ -41,9 +44,17 @@ class Clawer:
                     Fetch_proxy.proxy_pool.append(self.proxys['proxies'])
 
             except:
-                self.respond = self.req.text
-                logger.info(self.respond)
-                self.respond = None
+                content = self.req.text
+                while ",," in content:
+                    content = content.replace(',,', ',"",')
+                while "[," in content:
+                    content = content.replace("[,", '["",')
+                content = eval(content)
+                if isinstance(content, list):
+                    self.respond = content
+                else:
+                    logger.info(self.respond)
+                    self.respond = None
 
         elif status_code in [301, 302, 429, 302, 502]:
             self.status_change_proxy()

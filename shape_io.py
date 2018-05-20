@@ -1,6 +1,9 @@
 import shapefile
 import os
 from Clawer_Base.geo_lab import Rectangle
+from Clawer_Base.progress_bar import view_bar
+import pandas as pd
+
 
 
 class Shapefile_Write:
@@ -53,10 +56,23 @@ class Shapefile_Reader:
 
 
 if __name__ == "__main__":
-    # dirname, filename = os.path.split('aa/bb/cc/dd')
-    # print(dirname)
-    sf_reader = Shapefile_Reader(r'D:\GIS_workspace\东莞\东莞')
-    print(sf_reader.convert_to_rect(16))
+    # 文件输入
+    df = pd.read_csv('shape.csv', index_col='Buid')
+    build = list(set(df.index))
+    num = len(build)
+    print(num)
+    shape_writer = Shapefile_Write('ploygon', [('Build', "C"),])
+    for order, i in enumerate(build):
+        view_bar(order, num)
+        print(order)
+        build_df = df[['CX', 'DY']][df.index == i]
+        build_dict = build_df.to_dict('split')
+        points = build_dict['data']
+        shape_writer.plot(points, (i,))
+    shape_writer.save('D:\program_lib\Clawer_Base\pg_shape')
+    #
+    # sf_reader = Shapefile_Reader(r'D:\GIS_workspace\东莞\东莞')
+    # print(sf_reader.convert_to_rect(16))
 
 
 
