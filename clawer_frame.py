@@ -115,7 +115,10 @@ class Clawer:
     def status_change_cookies(self):
         self.cookies = self.get_cookie()
         time.sleep(5)
-        self.requestor()
+        if self.cookies:
+            self.requestor()
+        else:
+            self.status_change_cookies()
 
     def get_cookie(self):
         print('跳过')
