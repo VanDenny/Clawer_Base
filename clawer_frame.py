@@ -171,6 +171,15 @@ class Clawer:
         res_saver = Res_saver(info_list, 'stat', floder_path='Req_stat')
         res_saver.save_as_file()
 
+    def status_change_cookies(self):
+        # self.cookies = self.get_cookie()
+        # time.sleep(5)
+        # if self.cookies:
+        #     self.requestor()
+        # else:
+        #     self.status_change_cookies()
+        pass
+
     def stat_controller(self):
         pass
 
