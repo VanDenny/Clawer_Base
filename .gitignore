@@ -1,7 +1,9 @@
-
 *.pyc
 *.log
 *.dbf
 *.rar
 *.shp
 *.shx
+*.png
+*.csv
+*.log
