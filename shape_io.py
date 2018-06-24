@@ -23,8 +23,8 @@ class Shapefile_Write:
 
     def plot(self, points_list, record_tuple=()):
         if self.filetype_str == 'point':
-                x, y = points_list
-                self.writer.point(x, y)
+                point_geo = tuple(points_list)
+                self.writer.point(*point_geo)
         elif self.filetype_str == 'line':
             self.writer.poly(parts=[points_list], shapeType=shapefile.POLYLINE)
         else:

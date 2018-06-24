@@ -30,7 +30,7 @@ class Clawer:
         """请求并处理超时请求"""
         try:
             self.req = requests.get(self.url, headers=self.headers,
-                                    params=self.params, timeout=5,
+                                    params=self.params, timeout=300,
                                     allow_redirects=False, cookies=self.cookies, **self.proxys)
             # print(self.req.url)
             if self.req_id == '':
@@ -68,11 +68,15 @@ class Clawer:
                     content = content.replace(',,', ',"",')
                 while "[," in content:
                     content = content.replace("[,", '["",')
-                content = eval(content)
+                try:
+                    content = eval(content)
+                except:
+                    pass
                 if isinstance(content, list):
                     self.respond = content
                 else:
-                    logger.info(self.respond)
+                    # logger.info(content)
+                    self._respond = content
                     self.respond = None
 
         elif status_code in [301, 302, 429, 302, 502]:
