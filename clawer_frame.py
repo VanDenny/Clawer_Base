@@ -1,7 +1,6 @@
 from Clawer_Base.user_agents import User_agents
 from Clawer_Base.logger import logger
 from Clawer_Base.proxy_clawers import Fetch_proxy
-from Clawer_Base.key_changer import Key_Changer
 from Clawer_Base.ioput import Res_saver
 import requests
 from requests.exceptions import ReadTimeout, ConnectionError
@@ -22,17 +21,19 @@ class Clawer:
         self.params = params
         self.proxys = {'proxies': ''}
         self.cookies = self._cookies
-        self.key_type = ''
         self.req_id = ''
         self.repeat_times = 0
 
     def requestor(self):
         """请求并处理超时请求"""
+        # print(self.url)
         try:
             self.req = requests.get(self.url, headers=self.headers,
-                                    params=self.params, timeout=300,
+                                    params=self.params, timeout=10,
                                     allow_redirects=False, cookies=self.cookies, **self.proxys)
+            # print(self.req)
             # print(self.req.url)
+            # self.req.encoding = "gbk"
             if self.req_id == '':
                 self.req_id = self.req.url
             status_code = self.req.status_code
@@ -79,11 +80,11 @@ class Clawer:
                     self._respond = content
                     self.respond = None
 
-        elif status_code in [301, 302, 429, 302, 502]:
+        elif status_code in [301, 302, 429, 302, 502, 403]:
             self.status_change_proxy()
 
-        elif status_code in [400, 401, 402, 403, 404]:
-            logger.info('%s_%s 没有信息' % (self.req_url, status_code))
+        elif status_code in [400, 401, 402, 404]:
+            logger.info('%s_%s 没有信息' % (self.url, status_code))
             self.respond = None
 
         elif status_code in [202, 204]:
@@ -105,26 +106,25 @@ class Clawer:
 
     def status_ok(self):
         """请求成功的处理步骤,根据api不同需要自定义self.respond的处理过程"""
-        pass
+        return self.parser()
 
     def status_pass(self):
-        logger.info('已跳过 %s' % self.req_url)
+        logger.info('已跳过 %s' % self.req.url)
 
     def status_invalid_request(self):
-        logger.info('请求错误 %s' % self.req_url)
+        logger.info('请求错误 %s' % self.req.url)
 
     def status_unknown_error(self):
-        logger.info('未知错误 %s' % self.req_url)
+        logger.info('未知错误 %s' % self.req.url)
 
     def status_change_key(self):
-        logger.info('更换密钥 %s' % self.req_url)
-        key_dict = Key_Changer(self.key_type).process()
-        self.params.update_key(key_dict)
-        self.requestor()
+        logger.info('更换密钥 %s' % self.req.url)
+        self.params.update_key()
+        return self.process()
 
     def status_change_user_agent(self):
         self.headers = User_agents().get_headers()
-        self.requestor()
+        return self.process()
 
     def status_change_proxy(self):
         if Fetch_proxy.proxy_pool:
@@ -132,7 +132,17 @@ class Clawer:
         else:
             Fetch_proxy.proxy_pool = Fetch_proxy().fetch_new_proxyes(15)
             self.proxys['proxies'] = Fetch_proxy.proxy_pool.pop()
-        self.requestor()
+        return self.process()
+
+    def status_sleep_try(self):
+        if self.repeat_times <= 10:
+            time.sleep(5)
+            print('=====================休息5秒======================')
+            self.repeat_times += 1
+            return self.process()
+        else:
+            logger.info("重试超过 10 次， 跳过 %s" % self.req.url)
+            self.status_pass()
 
     def cookie_init(self):
         cookies={}
