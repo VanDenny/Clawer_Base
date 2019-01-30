@@ -2,6 +2,7 @@ from Clawer_Base.logger import logger
 from math import radians, cos, sin, asin, sqrt, hypot
 import numpy as np
 import shapefile
+import pandas as pd
 
 class Geo_Point:
     def __init__(self, lng, lat):
@@ -182,10 +183,28 @@ class Sample_Generator:
         print('跳过')
         pass
 
+
+
+
 if __name__ == "__main__":
-    a_rect = Rectangle().read_from_shp(r'D:\program_lib\GDPOI\guangzhou\广州shapefile')
-    square = a_rect.convert_to_outline_square()
-    print(square.lng1)
-    print(square.lng2)
-    print(square.lat1)
-    print(square.lat2)
+    # a_rect = Rectangle().read_from_shp(r'D:\program_lib\GDPOI\guangzhou\广州shapefile')
+    # square = a_rect.convert_to_outline_square()
+    # print(square.lng1)
+    # print(square.lng2)
+    # print(square.lat1)
+    # print(square.lat2)
+
+    df = pd.read_excel(r'D:\program_lib\BD_scenery\result\青烟威合并.xlsx_group.xlsx')
+    dict_list = df.to_dict('records')
+    res_list = []
+    for i in dict_list:
+        point1_lng = i['gcj_lng']
+        point1_lat = i['gcj_lat']
+        point2_lng = i['gcj_lng1']
+        point2_lat = i['gcj_lat1']
+        geo_point = Geo_Point(point1_lng, point1_lat)
+        geo_point1 = Geo_Point(point2_lng, point2_lat)
+        i['distance'] = geo_point.calc_distance(geo_point1)
+        res_list.append(i)
+    res_df = pd.DataFrame(res_list)
+    res_df.to_excel(r'D:\program_lib\BD_scenery\result\青烟威合并distance.xlsx')

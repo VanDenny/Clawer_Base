@@ -135,7 +135,7 @@ class Excel_merger:
     def process(self):
         # 根据具体需求组合
         df = self.merge()
-        df = self.dropduplicates(df, 'trackId', 'date')
+        # df = self.dropduplicates(df, 'trackId', 'date')
         # df = self.split(df, 'location')
         self.saver(df)
 
@@ -150,7 +150,7 @@ def get_filepath(folder_path):
 
 
 if __name__ == "__main__":
-    gdpoi_merger = Excel_merger(r'D:\program_lib\HWZS\result\海珠轨迹')
+    gdpoi_merger = Excel_merger(r'D:\program_lib\hiking_track\result\河源驾车')
     gdpoi_merger.process()
     # 修改
     # mongo_input = Mongo_input('GD_POI')

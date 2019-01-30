@@ -4,6 +4,8 @@
 __author = "Brady_Hu"
 
 import math
+import pandas as pd
+import os
 
 x_pi = 3.14159265358979324 * 3000.0 / 180.0
 pi = 3.1415926535897932384626  # π
@@ -130,14 +132,32 @@ def out_of_china(lng, lat):
     """
     return not (lng > 73.66 and lng < 135.05 and lat > 3.86 and lat < 53.55)
 
-if __name__ == '__main__':
-    lng = 128.543
-    lat = 37.065
-    result1 = gcj02_to_bd09(lng, lat)
-    result2 = bd09_to_gcj02(lng, lat)
-    result3 = wgs84_to_gcj02(lng, lat)
-    result4 = gcj02_to_wgs84(lng, lat)
-    result5 = bd09_to_wgs84(lng, lat)
-    result6 = wgs84_to_bd09(lng, lat)
+def point_trans(mode, lon_key, lat_key, file_path):
+    df = pd.read_excel(file_path)
+    dict_list = df.to_dict('records')
+    prj = mode.__name__.split('_')[-1]
+    new_lon_key = prj + '_lon'
+    new_lat_key = prj + '_lat'
+    res_list = []
+    for ord, poi in enumerate(dict_list):
+        print(ord)
+        poi[new_lon_key], poi[new_lat_key] = mode(poi[lon_key], poi[lat_key])
+        res_list.append(poi)
+    res_df = pd.DataFrame(res_list)
+    path_parts = os.path.splitext(file_path)
+    out_path = path_parts[0] + '_%s' % prj + path_parts[1]
+    print(out_path)
+    res_df.to_excel(out_path)
 
-    print(result1, result2, result3, result4, result5, result6)
+if __name__ == '__main__':
+    # lng = 128.543
+    # lat = 37.065
+    # result1 = gcj02_to_bd09(lng, lat)
+    # result2 = bd09_to_gcj02(lng, lat)
+    # result3 = wgs84_to_gcj02(lng, lat)
+    # result4 = gcj02_to_wgs84(lng, lat)
+    # result5 = bd09_to_wgs84(lng, lat)
+    # result6 = wgs84_to_bd09(lng, lat)
+    #
+    # print(result1, result2, result3, result4, result5, result6)
+    point_trans(bd09_to_gcj02, 'lon', 'lat', r'D:\program_lib\train_deal\站点百度坐标.xlsx')

@@ -57,7 +57,7 @@ class G_Geocoding(Clawer):
             print('%s 地址获取成功' % self.params['address'])
             return res_list
         else:
-            logger.info('结果为空 %s' % self.req_url)
+            logger.info('结果为空 %s' % self.req.url)
 
     def parser(self, json_dict):
         res_dict = {}
